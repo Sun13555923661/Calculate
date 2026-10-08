@@ -2,14 +2,15 @@
 <html lang="zh-CN">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- 视口必须保留，控制手机缩放 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>面积扣减计算器</title>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box;font-family:system-ui}
 body{padding:12px;max-width:950px;margin:0 auto}
 
-/*标题+记账日期同行布局*/
+/*标题+记账日期同行布局，小屏自动换行*/
 .header-row{
   display:flex;
   align-items:center;
@@ -20,6 +21,7 @@ body{padding:12px;max-width:950px;margin:0 auto}
 }
 .header-row h2{
   margin:0;
+  font-size:clamp(1.5rem,4vw,2rem);
 }
 .date-item{
   font-size:16px;
@@ -27,7 +29,7 @@ body{padding:12px;max-width:950px;margin:0 auto}
   align-items:center;
   gap:6px;
 }
-/* 关键：禁止“记账日期：”文字自动折行 */
+/* 禁止文字折行，记账日期：不会拆成两行 */
 .date-label{
   white-space: nowrap;
 }
@@ -36,6 +38,7 @@ body{padding:12px;max-width:950px;margin:0 auto}
   font-size:16px;
 }
 
+/* 表格容器：横向滚动，手机窄屏可以左右滑动看完整表格 */
 .table-wrap{
   width:100%;
   overflow-x:auto;
@@ -45,20 +48,10 @@ body{padding:12px;max-width:950px;margin:0 auto}
 table{
   width:100%;
   border-collapse:collapse;
-  table-layout:fixed;
-  min-width:660px;
+  min-width:700px;
 }
-/*列宽度：序号2位数字宽度*/
-col:nth-child(1){width:8%;}
-col:nth-child(2){width:12%;}
-col:nth-child(3){width:12%;}
-col:nth-child(4){width:12%;}
-col:nth-child(5){width:12%;}
-col:nth-child(6){width:12%;}
-col:nth-child(7){width:32%;}
-
-th,td{border:1px solid #ccc;padding:8px;text-align:center}
-/* 输入框浅绿色，手机浏览器增加-webkit前缀防止被重置 */
+th,td{border:1px solid #ccc;padding:6px 4px;text-align:center;font-size:14px}
+/*输入框浅绿色，手机浏览器修复样式*/
 input{
   width:100%;
   padding:6px;
@@ -67,7 +60,24 @@ input{
   -webkit-appearance:none;
 }
 .total{font-size:22px;font-weight:bold;color:#c00;margin:15px 0;}
-button{padding:8px 12px;margin:4px;cursor:pointer;border:none;border-radius:4px;background:#409eff;color:#fff}
+/*按钮自适应：自动换行，手机占满宽度*/
+.button-group{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:10px 0;
+}
+button{
+  flex:1;
+  min-width:120px;
+  padding:10px 8px;
+  cursor:pointer;
+  border:none;
+  border-radius:4px;
+  background:#409eff;
+  color:#fff;
+  font-size:15px;
+}
 </style>
 </head>
 <body>
@@ -81,9 +91,6 @@ button{padding:8px 12px;margin:4px;cursor:pointer;border:none;border-radius:4px;
 
 <div class="table-wrap">
 <table>
-  <colgroup>
-    <col><col><col><col><col><col><col>
-  </colgroup>
   <thead>
     <tr>
       <th>序号</th><th>长</th><th>宽</th><th>高</th><th>扣减宽</th><th>扣减高</th><th>本行结果</th>
@@ -103,10 +110,12 @@ button{padding:8px 12px;margin:4px;cursor:pointer;border:none;border-radius:4px;
 </table>
 </div>
 
+<div class="button-group">
 <button onclick="addRow()">+新增一行</button>
 <button onclick="addFiveRow()">+新增五行</button>
 <button onclick="exportCsv()">导出CSV文件</button>
 <button onclick="exportImage()">生成图片</button>
+</div>
 
 <div class="total">合计总数：<span id="sumTotal">0</span></div>
 
