@@ -4,26 +4,89 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>面积扣减计算器</title>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box;font-family:system-ui}
-body{padding:16px;max-width:900px;margin:0 auto}
-table{width:100%;border-collapse:collapse;margin:10px 0}
+body{padding:12px;max-width:950px;margin:0 auto}
+
+/*标题+记账日期同行布局*/
+.header-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-bottom:10px;
+}
+.header-row h2{
+  margin:0;
+}
+.date-item{
+  font-size:16px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.date-item input[type="date"]{
+  padding:4px 6px;
+  font-size:16px;
+}
+
+.table-wrap{
+  width:100%;
+  overflow-x:auto;
+  -webkit-overflow-scrolling: touch;
+  margin:10px 0;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+  min-width:660px;
+}
+/*列宽度：序号2位数字宽度*/
+col:nth-child(1){width:8%;}
+col:nth-child(2){width:12%;}
+col:nth-child(3){width:12%;}
+col:nth-child(4){width:12%;}
+col:nth-child(5){width:12%;}
+col:nth-child(6){width:12%;}
+col:nth-child(7){width:32%;}
+
 th,td{border:1px solid #ccc;padding:8px;text-align:center}
-input{width:100%;padding:6px;border:1px solid #aaa}
-.total{font-size:22px;font-weight:bold;color:#c00;margin:15px 0}
-button{padding:8px 14px;margin:4px;cursor:pointer}
+/* 重点：输入框设置浅绿色，手机浏览器增加-webkit前缀防止被重置 */
+input{
+  width:100%;
+  padding:6px;
+  border:1px solid #aaa;
+  background-color:#d8f3dc !important;
+  -webkit-appearance:none;
+}
+.total{font-size:22px;font-weight:bold;color:#c00;margin:15px 0;}
+button{padding:8px 12px;margin:4px;cursor:pointer;border:none;border-radius:4px;background:#409eff;color:#fff}
 </style>
 </head>
 <body>
-<h2>面积扣减计算</h2>
+<div class="header-row">
+  <h2>面积扣减计算</h2>
+  <div class="date-item">
+    记账日期：<input type="date" id="recordDate">
+  </div>
+</div>
+
+<div class="table-wrap">
 <table>
+  <colgroup>
+    <col><col><col><col><col><col><col>
+  </colgroup>
   <thead>
     <tr>
-      <th>长</th><th>宽</th><th>高</th><th>扣减宽</th><th>扣减高</th><th>本行结果</th>
+      <th>序号</th><th>长</th><th>宽</th><th>高</th><th>扣减宽</th><th>扣减高</th><th>本行结果</th>
     </tr>
   </thead>
   <tbody id="tableBody">
     <tr>
+      <td class="idx">1</td>
       <td><input class="c"></td>
       <td><input class="d"></td>
       <td><input class="e"></td>
@@ -33,15 +96,39 @@ button{padding:8px 14px;margin:4px;cursor:pointer}
     </tr>
   </tbody>
 </table>
+</div>
+
 <button onclick="addRow()">+新增一行</button>
 <button onclick="addFiveRow()">+新增五行</button>
+<button onclick="exportCsv()">导出CSV文件</button>
+<button onclick="exportImage()">生成图片</button>
+
 <div class="total">合计总数：<span id="sumTotal">0</span></div>
 
 <script>
 const tb = document.getElementById('tableBody');
 const sumDom = document.getElementById('sumTotal');
+const recordDateInput = document.getElementById("recordDate");
 
-// 单行计算
+// 更新序号
+function refreshIndex(){
+  const trList = tb.querySelectorAll("tr");
+  trList.forEach((tr,idx)=>{
+    tr.querySelector(".idx").innerText = idx+1;
+  })
+}
+
+// 默认今日日期
+function setDefaultDate(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const d = String(now.getDate()).padStart(2,'0');
+  recordDateInput.value = `${y}-${m}-${d}`;
+}
+setDefaultDate();
+
+//单行计算
 function calcRow(row){
   const c = Number(row.querySelector('.c').value)||0;
   const d = Number(row.querySelector('.d').value)||0;
@@ -56,7 +143,7 @@ function calcRow(row){
   return res;
 }
 
-// 全部重算+汇总
+//全部重算
 function recalcAll(){
   let total = 0;
   document.querySelectorAll('#tableBody tr').forEach(tr=>{
@@ -65,10 +152,11 @@ function recalcAll(){
   sumDom.innerText = total;
 }
 
-// 新增一行
+//新增一行
 function addRow(){
   const tr = document.createElement('tr');
   tr.innerHTML = `
+      <td class="idx"></td>
       <td><input class="c"></td>
       <td><input class="d"></td>
       <td><input class="e"></td>
@@ -78,14 +166,16 @@ function addRow(){
   `;
   tb.appendChild(tr);
   tr.querySelectorAll('input').forEach(i=>i.oninput=recalcAll);
+  refreshIndex();
   recalcAll();
 }
 
-// 新增五行
+//新增五行
 function addFiveRow(){
   for(let i=0;i<5;i++){
     const tr = document.createElement('tr');
     tr.innerHTML = `
+        <td class="idx"></td>
         <td><input class="c"></td>
         <td><input class="d"></td>
         <td><input class="e"></td>
@@ -96,10 +186,48 @@ function addFiveRow(){
     tb.appendChild(tr);
     tr.querySelectorAll('input').forEach(i=>i.oninput=recalcAll);
   }
+  refreshIndex();
   recalcAll();
 }
 
-// 绑定已有输入框事件
+//导出CSV
+function exportCsv(){
+  const recordDate = recordDateInput.value || "";
+  const header = ["序号","记账日期","长","宽","高","扣减宽","扣减高","本行结果"];
+  const rows = [header];
+  document.querySelectorAll("#tableBody tr").forEach(tr=>{
+    const idx = tr.querySelector('.idx').innerText || "";
+    const c = tr.querySelector('.c').value || "";
+    const d = tr.querySelector('.d').value || "";
+    const e = tr.querySelector('.e').value || "";
+    const g = tr.querySelector('.g').value || "";
+    const h = tr.querySelector('.h').value || "";
+    const res = tr.querySelector('.rowRes').innerText || "0";
+    rows.push([idx,recordDate,c,d,e,g,h,res]);
+  });
+  const csvText = rows.map(r=> r.map(cell=>`"${String(cell).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob = new Blob(["\uFEFF"+csvText],{type:"text/csv;charset=utf‑8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "面积扣减计算数据.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+//生成图片
+function exportImage(){
+  html2canvas(document.body,{scale:2}).then(canvas=>{
+    const link = document.createElement('a');
+    link.download = "面积扣减计算截图.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  })
+}
+
 document.querySelectorAll('input').forEach(i=>i.oninput=recalcAll);
+refreshIndex();
 </script>
 </body></html>
