@@ -2,7 +2,6 @@
 <html lang="zh-CN">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<!-- 视口必须保留，控制手机缩放 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>面积扣减计算器</title>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -29,7 +28,6 @@ body{padding:12px;max-width:950px;margin:0 auto}
   align-items:center;
   gap:6px;
 }
-/* 禁止文字折行，记账日期：不会拆成两行 */
 .date-label{
   white-space: nowrap;
 }
@@ -38,7 +36,6 @@ body{padding:12px;max-width:950px;margin:0 auto}
   font-size:16px;
 }
 
-/* 表格容器：横向滚动，手机窄屏可以左右滑动看完整表格 */
 .table-wrap{
   width:100%;
   overflow-x:auto;
@@ -51,7 +48,6 @@ table{
   min-width:700px;
 }
 th,td{border:1px solid #ccc;padding:6px 4px;text-align:center;font-size:14px}
-/*输入框浅绿色，手机浏览器修复样式*/
 input{
   width:100%;
   padding:6px;
@@ -60,7 +56,7 @@ input{
   -webkit-appearance:none;
 }
 .total{font-size:22px;font-weight:bold;color:#c00;margin:15px 0;}
-/*按钮自适应：自动换行，手机占满宽度*/
+/*按钮组：自动换行，按钮不拉伸*/
 .button-group{
   display:flex;
   flex-wrap:wrap;
@@ -68,9 +64,8 @@ input{
   margin:10px 0;
 }
 button{
-  flex:1;
   min-width:120px;
-  padding:10px 8px;
+  padding:10px 14px;
   cursor:pointer;
   border:none;
   border-radius:4px;
@@ -124,7 +119,6 @@ const tb = document.getElementById('tableBody');
 const sumDom = document.getElementById('sumTotal');
 const recordDateInput = document.getElementById("recordDate");
 
-// 更新序号
 function refreshIndex(){
   const trList = tb.querySelectorAll("tr");
   trList.forEach((tr,idx)=>{
@@ -132,7 +126,6 @@ function refreshIndex(){
   })
 }
 
-// 默认今日日期
 function setDefaultDate(){
   const now = new Date();
   const y = now.getFullYear();
@@ -142,7 +135,6 @@ function setDefaultDate(){
 }
 setDefaultDate();
 
-//单行计算
 function calcRow(row){
   const c = Number(row.querySelector('.c').value)||0;
   const d = Number(row.querySelector('.d').value)||0;
@@ -157,7 +149,6 @@ function calcRow(row){
   return res;
 }
 
-//全部重算
 function recalcAll(){
   let total = 0;
   document.querySelectorAll('#tableBody tr').forEach(tr=>{
@@ -166,7 +157,6 @@ function recalcAll(){
   sumDom.innerText = total;
 }
 
-//新增一行
 function addRow(){
   const tr = document.createElement('tr');
   tr.innerHTML = `
@@ -184,7 +174,6 @@ function addRow(){
   recalcAll();
 }
 
-//新增五行
 function addFiveRow(){
   for(let i=0;i<5;i++){
     const tr = document.createElement('tr');
@@ -204,7 +193,6 @@ function addFiveRow(){
   recalcAll();
 }
 
-//导出CSV
 function exportCsv(){
   const recordDate = recordDateInput.value || "";
   const header = ["序号","记账日期","长","宽","高","扣减宽","扣减高","本行结果"];
@@ -231,7 +219,6 @@ function exportCsv(){
   URL.revokeObjectURL(url);
 }
 
-//生成图片
 function exportImage(){
   html2canvas(document.body,{scale:2}).then(canvas=>{
     const link = document.createElement('a');
