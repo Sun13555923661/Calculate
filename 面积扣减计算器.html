@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>面积扣减计算器</title>
+<style>
+*{box-sizing:border-box;font-family:system-ui}
+body{padding:16px;max-width:900px;margin:0 auto}
+table{width:100%;border-collapse:collapse;margin:10px 0}
+th,td{border:1px solid #ccc;padding:8px;text-align:center}
+input{width:100%;padding:6px;border:1px solid #aaa}
+.total{font-size:22px;font-weight:bold;color:#c00;margin:15px 0}
+button{padding:8px 14px;margin:4px;cursor:pointer}
+</style>
+</head>
+<body>
+<h2>面积扣减计算</h2>
+<table>
+  <thead>
+    <tr>
+      <th>长</th><th>宽</th><th>高</th><th>扣减宽</th><th>扣减高</th><th>本行结果</th>
+    </tr>
+  </thead>
+  <tbody id="tableBody">
+    <tr>
+      <td><input class="c"></td>
+      <td><input class="d"></td>
+      <td><input class="e"></td>
+      <td><input class="g"></td>
+      <td><input class="h"></td>
+      <td class="rowRes"></td>
+    </tr>
+  </tbody>
+</table>
+<button onclick="addRow()">+新增一行</button>
+<button onclick="addFiveRow()">+新增五行</button>
+<div class="total">合计总数：<span id="sumTotal">0</span></div>
+
+<script>
+const tb = document.getElementById('tableBody');
+const sumDom = document.getElementById('sumTotal');
+
+// 单行计算
+function calcRow(row){
+  const c = Number(row.querySelector('.c').value)||0;
+  const d = Number(row.querySelector('.d').value)||0;
+  const e = Number(row.querySelector('.e').value)||0;
+  const g = Number(row.querySelector('.g').value)||0;
+  const h = Number(row.querySelector('.h').value)||0;
+  let res = c*d*e;
+  if(g>0 && h>0){
+    res = res - g*h;
+  }
+  row.querySelector('.rowRes').innerText = res;
+  return res;
+}
+
+// 全部重算+汇总
+function recalcAll(){
+  let total = 0;
+  document.querySelectorAll('#tableBody tr').forEach(tr=>{
+    total += calcRow(tr);
+  })
+  sumDom.innerText = total;
+}
+
+// 新增一行
+function addRow(){
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+      <td><input class="c"></td>
+      <td><input class="d"></td>
+      <td><input class="e"></td>
+      <td><input class="g"></td>
+      <td><input class="h"></td>
+      <td class="rowRes"></td>
+  `;
+  tb.appendChild(tr);
+  tr.querySelectorAll('input').forEach(i=>i.oninput=recalcAll);
+  recalcAll();
+}
+
+// 新增五行
+function addFiveRow(){
+  for(let i=0;i<5;i++){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td><input class="c"></td>
+        <td><input class="d"></td>
+        <td><input class="e"></td>
+        <td><input class="g"></td>
+        <td><input class="h"></td>
+        <td class="rowRes"></td>
+    `;
+    tb.appendChild(tr);
+    tr.querySelectorAll('input').forEach(i=>i.oninput=recalcAll);
+  }
+  recalcAll();
+}
+
+// 绑定已有输入框事件
+document.querySelectorAll('input').forEach(i=>i.oninput=recalcAll);
+</script>
+</body></html>
