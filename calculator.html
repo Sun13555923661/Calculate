@@ -2,7 +2,6 @@
 <html lang="zh-CN">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<!-- 移动端视口适配，必须加 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>面积扣减计算</title>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -32,10 +31,11 @@ body{padding:12px;max-width:950px;margin:0 auto}
 .date-label{
   white-space: nowrap;
 }
+/* 日期框宽度缩小 */
 .date-item input[type="date"]{
   padding:4px 6px;
   font-size:16px;
-  width:220px;
+  width:130px;
 }
 
 .table-wrap{
@@ -50,17 +50,26 @@ table{
   min-width:640px;
 }
 col:nth-child(1){width:8%;}    /* 序号 */
-col:nth-child(2){width:20%;}   /* 长 */
-col:nth-child(3){width:20%;}   /* 高 */
+col:nth-child(2){width:19%;}   /* 长 */
+col:nth-child(3){width:19%;}   /* 高 */
 col:nth-child(4){width:18%;}   /* 扣减长 */
 col:nth-child(5){width:18%;}   /* 扣减高 */
-col:nth-child(6){width:16%;}   /* 本行结果 */
+col:nth-child(6){width:18%;}   /* 本行结果 */
 th,td{border:1px solid #ccc;padding:6px 4px;text-align:center;font-size:14px}
-input{
+/* 长、高输入框：浅绿色 */
+input.c, input.e{
   width:100%;
   padding:6px;
   border:1px solid #aaa;
   background-color:#d8f3dc !important;
+  -webkit-appearance:none;
+}
+/* 扣减长、扣减高输入框：浅橙色，与长高区分 */
+input.g, input.h{
+  width:100%;
+  padding:6px;
+  border:1px solid #d6b98a;
+  background-color:#ffe9c7 !important;
   -webkit-appearance:none;
 }
 .total{font-size:22px;font-weight:bold;color:#c00;margin:15px 0;}
@@ -87,7 +96,7 @@ button{
   body{padding:8px;}
   .header-row h2{font-size:1.4rem;}
   .date-item{width:100%;}
-  .date-item input[type="date"]{width:100%;}
+  .date-item input[type="date"]{width:130px;}
   table{min-width:100%;}
   th,td{font-size:12px;padding:4px 2px;}
   button{min-width:45%;font-size:14px;padding:8px 6px;}
